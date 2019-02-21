@@ -79,3 +79,10 @@ if ( !defined('ABSPATH') )
 
 /** Sets up WordPress vars and included files. */
 require_once(ABSPATH . 'wp-settings.php');
+
+/*** FTP login ***/
+define("FTP_HOST", "host-ftp");
+define("FTP_USER", "nombre-usuario-ftp");
+define("FTP_PASS", "password-ftp");
+/*** Definir FS_METHOD en WordPress para actualizar de manera automatica sin FTP ***/
+define("FS_METHOD","direct");
