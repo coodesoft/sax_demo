@@ -55,6 +55,8 @@ function display_opcion_sincronizar_productos()
 	?>
 
 		<input type="button" name="sincronizar_productos" value="Sincronizar productos" onclick="sincronizarProductos()"/>
+    <input type="button" name="delete_product_key" value="Borrar key de productos" onclick="deleteProductKey()"/>
+
     <script>
 
       function sincronizarProductos(){
@@ -62,6 +64,20 @@ function display_opcion_sincronizar_productos()
           type : "post",
           url : "<?php echo home_url('/wp-admin/admin-ajax.php'); ?>",
           data : 'action=get_sincronizar_producto&security=<?php echo wp_create_nonce('globalsax'); ?>',
+          success: function( response ) {
+            console.log(response);
+            //location.reload();
+        },
+        error: function() {
+          console.log('error');
+        }
+        });
+      }
+      function deleteProductKey(){
+        jQuery.ajax({
+          type : "post",
+          url : "<?php echo home_url('/wp-admin/admin-ajax.php'); ?>",
+          data : 'action=delete_product_key&security=<?php echo wp_create_nonce('globalsax'); ?>',
           success: function( response ) {
             console.log(response);
             //location.reload();

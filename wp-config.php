@@ -16,13 +16,13 @@
 
 // ** Ajustes de MySQL. Solicita estos datos a tu proveedor de alojamiento web. ** //
 /** El nombre de tu base de datos de WordPress */
-define('DB_NAME', 'test');
+define('DB_NAME', 'globalsa_ext');
 
-/** Tu nombre de usuario de MySQL */
-define('DB_USER', 'coodesoft');
+/** MySQL database username */
+define('DB_USER', 'nicolangiano');
 
-/** Tu contraseña de MySQL */
-define('DB_PASSWORD', 'coodesoft');
+/** MySQL database password */
+define('DB_PASSWORD', 'nicolas00');
 
 /** Host de MySQL (es muy probable que no necesites cambiarlo) */
 define('DB_HOST', 'localhost');

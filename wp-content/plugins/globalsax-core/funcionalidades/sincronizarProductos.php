@@ -477,5 +477,18 @@ function get_variations($product_data){
 	$string = $string.']';
 	return json_decode($string,true);
 }
+add_action('wp_ajax_delete_product_key', 'delete_product_key');
+add_action('wp_ajax_nopriv_delete_product_key','delete_product_key');
 
+function ajax_delete_product_key(){
+	//update_user_meta(1,'importar_productos',-99);
+
+	delete_product_key();
+  //console_log('funciona');
+}
+function delete_product_key(){
+		global $wpdb;
+		$query = "DELETE FROM `wd_usermeta` WHERE SUBSTR(meta_key, 1, 4) = 'key_'";
+		return $wpdb->query($query);
+}
 ?>
