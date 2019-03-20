@@ -202,12 +202,21 @@ function gbs_create_order(){
     'body'        => json_encode($ws_json)
     );
   $result = wp_remote_post($endpoint, $send_data);
+  $values = array( 'cliente_id' => $user->ID,
+                   'resultado' => $result,
+                   'json' => $ws_json,
+                   'tipo' => 'pedido');
+  $types = array( '%d', '%s', '%s', '%s' );
   global $woocommerce;
   $woocommerce->cart->empty_cart();
+
   if ($status)
     echo json_encode(['status' => 'gbs-success', 'msg' => 'El pedido se ha realizado con éxito', 'WSResult' => $result, 'ws_json' => $ws_json]);
   else
     echo json_encode(['status' => 'gbs-error', 'msg' => 'Se ha producido un error al procesar el pedido', 'WSResult' => $result, 'ws_json' => $ws_json]);
+    global $wpdb;
+    $error_table = $wpdb->prefix . ('gs_error');
+    $wpdb->insert($error_table, $values ,$types);
   wp_die();
 }
 

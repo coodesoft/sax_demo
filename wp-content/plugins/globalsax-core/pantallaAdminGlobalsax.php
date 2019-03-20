@@ -3,6 +3,22 @@ define('GLOBALSAX_CORE','globalsax-core');
 
 function theme_settings_page()
 {
+  global $wpdb;
+  $error_table = $wpdb->prefix . ('gs_error');
+  if($wpdb->get_var("SHOW TABLES LIKE '$error_table'") != $error_table) {
+     //table not in database. Create new table
+     $charset_collate = $wpdb->get_charset_collate();
+      $sql = "CREATE TABLE $error_table (
+          id bigint(20) NOT NULL AUTO_INCREMENT,
+          cliente_id bigint(20) NOT NULL,
+          resultado varchar(120) NOT NULL,
+          json varchar(120) NOT NULL,
+          tipo varchar(120) NOT NULL,
+          PRIMARY KEY  (id)
+     ) $charset_collate;";
+     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+     dbDelta( $sql );
+  }
   $screen =  get_current_screen();
 	$pluginPageUID = $screen->parent_file;
     ?>
@@ -13,6 +29,7 @@ function theme_settings_page()
           <a href="<?= admin_url('admin.php?page='.$pluginPageUID.'&tab=assignClient')?>" class="nav-tab">Asignar clientes</a>
           <a href="<?= admin_url('admin.php?page='.$pluginPageUID.'&tab=assignSeller')?>" class="nav-tab">Asignar Seller</a>
           <a href="<?= admin_url('admin.php?page='.$pluginPageUID.'&tab=adminUrl')?>" class="nav-tab">Administrar URL</a>
+          <a href="<?= admin_url('admin.php?page='.$pluginPageUID.'&tab=errorTab')?>" class="nav-tab">Listado de errores</a>
         </h2>
 
       <div class="panel-body">
@@ -29,12 +46,19 @@ function theme_settings_page()
         <?php if ($activeTab == 'assignClient'){ ?>
   				<div class="gs-tab" id="editClientRel"><?php	assignClient(); ?></div>
   			<?php } ?>
+
         <?php if ($activeTab == 'assignSeller'){ ?>
   				<div class="gs-tab" id="editSeller"><?php assignSeller(); ?></div>
   			<?php } ?>
+
         <?php if ($activeTab == 'adminUrl'){ ?>
   				<div class="gs-tab" id="adminUrl"><?php adminUrl(); ?></div>
   			<?php } ?>
+
+        <?php  if ($activeTab == 'errorTab'){ ?>
+  				<div class="gs-tab" id="errorTab"><?php errorTab(); ?></div>
+  			<?php } ?>
+
 		</div>
 	<?php
 }
@@ -146,6 +170,9 @@ function display_opcion_administrar_url() {
   $commonurl = get_user_meta(1, "url", true);
   echo "La URL actual es: " . $commonurl;
 }
+function display_opcion_ver_errores() {
+  echo "Abrir la solapa para poder revisar los pedidos y las sincronizaciones erroneas";
+  }
 function display_theme_panel_fields()
 {
 	add_settings_section("section", "Configuracion de opciones de sistema", null, "theme-options");
@@ -156,8 +183,10 @@ function display_theme_panel_fields()
 	register_setting("section", "clientes");
 	add_settings_field("vendedores", "2) Sincronizar lista de vendedores", "display_opcion_sincronizar_vendedores","theme-options", "section");
 	register_setting("section", "vendedores");
-	add_settings_field("url", "4) Administrar url del WS", "display_opcion_administrar_url","theme-options", "section");
+	add_settings_field("url", "3) Administrar url del WS", "display_opcion_administrar_url","theme-options", "section");
     register_setting("section", "url");
+  add_settings_field("error", "4) Ver errores", "display_opcion_ver_errores","theme-options", "section");
+    register_setting("section", "error");
 	/**/
 }
 
@@ -321,6 +350,36 @@ function adminUrl(){
       <button type="submit" name="AceptarUrl" value="AceptarUrl">Aceptar</button>
     </div>
   </form>
+  <?php
+}
+
+function errorTab(){
+  global $wpdb;
+  $error_table = $wpdb->prefix . ('gs_error');
+  ?>
+  <table>
+      <tr>
+        <th>Cliente</th>
+        <th>Resultado</th>
+        <th>Tipo de Petición</th>
+        <th>Reenviar pedido (En desarrollo)</th>
+      </tr>
+      <tr>
+        <?php
+        $query = 'SELECT * FROM ' . $error_table;
+        $errores = $wpdb->get_results($query);
+        foreach ($errores as $key => $error) {
+           $id_cliente = $error->cliente_id;
+           $result = $error->resultado;
+           $type = $error->tipo;
+          ?>
+            <td><?php echo $id_cliente; ?></td>
+            <td><?php echo $result; ?></td>
+            <td><?php echo $type; ?></td>
+            <td> aca va el voton de reenviar </td>
+      </tr>
+    <?php } ?>
+  </table>
   <?php
 }
 ?>
